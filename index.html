@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>D3 Test</title>
+        <script type="text/javascript" src="d3/d3.v3.js"></script>
+        <script type="text/javascript" src="js/topojson.min.js"></script>
+        <script type="text/javascript" src="js/datamaps.world.hires.min.js"></script>
+    </head>
+    <body>
+
+      <div id="container" style="position: relative; width: 1000px; height: 600px;"></div>
+      <script>
+      var setRadius = 5;
+      var map = new Datamap({
+  element: document.getElementById("container"),
+    setProjection: function(element) {
+    var projection = d3.geo.equirectangular()
+      .center([120, -5])
+      .rotate([4.4, 0])
+      .scale(600)
+      .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+    var path = d3.geo.path()
+      .projection(projection);
+
+    return {path: path, projection: projection};
+  },
+  fills: {
+    defaultFill: "#999999",
+    authorHasTraveledTo: "#20906a",
+    Singapore: "#dcc916",
+    travel: "#191970"
+  },
+  data: {
+    IDN: { fillKey: "authorHasTraveledTo" },
+    SGP: { fillKey: "Singapore" },
+    VNM: { fillKey: "authorHasTraveledTo" },
+    MYS: { fillKey: "authorHasTraveledTo" },
+    MMR: { fillKey: "authorHasTraveledTo" },
+    THA: { fillKey: "authorHasTraveledTo" },
+    KHM: { fillKey: "authorHasTraveledTo" },
+  }
+});
+
+      map.bubbles([
+  {
+    name: 'Singapore',
+    radius: 10,
+    centered: 'SGP',
+    fillKey: 'Singapore',
+    im: 'sin'
+  },
+  {
+    name: 'Kuala Lumpur',
+    radius: setRadius,
+    latitude: 3, longitude: 102,
+    fillKey: 'travel',
+    im: 'kul'
+  },
+  {
+    name: 'Bali',
+    radius: setRadius,
+    latitude: -8.4, longitude: 115.2,
+    fillKey: 'travel',
+    im: 'bal'
+  },
+  {
+    name: 'Hanoi',
+    radius: setRadius,
+    latitude: 21, longitude: 106,
+    fillKey: 'travel',
+    im: 'han'
+  },
+  {
+    name: 'Koh Lanta',
+    radius: setRadius,
+    latitude: 8, longitude: 99,
+    fillKey: 'travel',
+    im: 'koh'
+  },
+  {
+    name: 'Udon Thani',
+    radius: setRadius,
+    latitude: 17.5, longitude: 102.4,
+    fillKey: 'travel',
+    im: 'udo'
+  },
+  {
+    name: 'Old Bagan',
+    radius: setRadius,
+    latitude: 21, longitude: 95,
+    fillKey: 'travel',
+    im: 'old'
+  },
+  {
+    name: 'Angkor Wat',
+    radius: setRadius,
+    latitude: 13, longitude: 104,
+    fillKey: 'travel',
+    im: 'ang'
+  },
+], {
+  popupTemplate: function(geo, data) {
+    return '<div class="hoverinfo">' + data.name +'' + '<div class="image_wrapper" id="this_one"><img src="images/'+ data.im + '.jpg" /></div>'
+  }
+});
+
+/*
+var colors = d3.scale.category10();
+
+      map.arc([{
+        destination: {
+          latitude: 1,
+          longitude: 104
+        },
+        origin: {
+          latitude:  60,
+          longitude: 24
+        }
+      }], {
+        greatArc: false,
+        animationSpeed: 1000
+      });
+      updateChoropleth();
+*/
+      </script>
+    </body>
+</html> 
