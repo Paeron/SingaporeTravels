@@ -6,123 +6,392 @@
         <script type="text/javascript" src="d3/d3.v3.js"></script>
         <script type="text/javascript" src="js/topojson.min.js"></script>
         <script type="text/javascript" src="js/datamaps.world.hires.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+        body {
+          background-color: #b1c6cb;
+          font-family: Helvetica;
+        }
+          #map {
+            position: relative;
+            margin: auto;
+            height: 500px;
+            border: 3px solid white;
+          }
+          #notmap {
+            padding: 10px;
+            position: relative;
+            margin: auto;
+            height: 500px;
+            border: 3px solid white;
+            display: block;
+          }
+          h1 {
+            color: white;
+            position: relative;
+            margin: auto;
+            text-align: center;
+            padding: 10px;
+            font-size: 40px;
+          }
+          h2, h4 {
+            padding: 10px;
+            color: white;
+            margin: auto;
+            text-align: center;
+          }
+          img {
+            display: block;
+            margin: auto;
+            position: relative;
+            text-align: center;
+            max-width: 100%;
+            box-shadow: 8px 8px 10px #aaa;
+          }
+          i:hover {
+            opacity: 0.5;
+          }
+          a {
+            color: white;
+          }
+          .hoverinfo {
+            font-weight: bold;
+          }
+          @media screen and (max-width: 480px) {
+            #map {
+              height: 500px;
+            }
+            #notmap {
+              height: 500px;
+            }
+          }
+        </style>
     </head>
     <body>
 
-      <div id="container" style="position: relative; width: 1000px; height: 600px;"></div>
-      <script>
-      var setRadius = 5;
-      var map = new Datamap({
-  element: document.getElementById("container"),
+      <div class="container-fluid">
+        <div class="row">
+          <h1>Singapore Travels <a href="https://github.com/Paeron/SingaporeTravels"><i class="fa fa-github"></i></a></h1>
+          <div class="col-sm-6">
+            <div id="map"></div>
+          </div>
+
+          <div class="col-sm-6">
+            <div id="notmap">
+              <h2 id="text"></h2>
+              <img id="image"/>
+              <h4 id="info"></h4>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+<script>
+  var setRadius = 7;
+  var opacity = 0.6;
+  var map = new Datamap({
+    element: document.getElementById("map"),
     setProjection: function(element) {
-    var projection = d3.geo.equirectangular()
-      .center([120, -5])
-      .rotate([4.4, 0])
-      .scale(600)
-      .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
-    var path = d3.geo.path()
-      .projection(projection);
+      var projection = d3.geo.equirectangular()
+        .center([110.4, 6.5])
+        .rotate([4.4, 0])
+        .scale(800)
+        .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+      var path = d3.geo.path()
+        .projection(projection);
+      return {path: path, projection: projection};
+    },
+    responsive: true,
+    fills: {
+      defaultFill: "#98b8c3",
+      authorHasTraveledTo: "#aac856",
+      Singapore: "#273105",
+      travel: "#4c5e00"
+    },
+    geographyConfig: {
+      highlightFillColor: '#b69e7c',
+      highlightBorderColor: '#rgba(1,1,1,0.5)',
+      highlightBorderWidth: 1,
+      popupTemplate: function(geography, data) {
+        document.getElementById("text").innerHTML = geography.properties.name;
+        document.getElementById("info").innerHTML = countrydata.data[geography.properties.name];
+        var image =  document.getElementById("image");
+        image.src = "images/"+geography.properties.name+".jpg";
+        image.style.display='block';
+        return '<div class="hoverinfo"><strong>' + geography.properties.name + '</strong></div>';
+      }
+    },
+    bubblesConfig: {
+      highlightFillColor: '#42a880',
+      highlightBorderColor: '#rgba(1,1,1,0.5)',
+      highlightBorderWidth: 2,
+    },
+    data: {
+      IDN: { fillKey: "authorHasTraveledTo" },
+      SGP: { fillKey: "Singapore" },
+      VNM: { fillKey: "authorHasTraveledTo" },
+      MYS: { fillKey: "authorHasTraveledTo" },
+      MMR: { fillKey: "authorHasTraveledTo" },
+      THA: { fillKey: "authorHasTraveledTo" },
+      KHM: { fillKey: "authorHasTraveledTo" },
+    }
+  });
 
-    return {path: path, projection: projection};
-  },
-  fills: {
-    defaultFill: "#999999",
-    authorHasTraveledTo: "#20906a",
-    Singapore: "#dcc916",
-    travel: "#191970"
-  },
-  data: {
-    IDN: { fillKey: "authorHasTraveledTo" },
-    SGP: { fillKey: "Singapore" },
-    VNM: { fillKey: "authorHasTraveledTo" },
-    MYS: { fillKey: "authorHasTraveledTo" },
-    MMR: { fillKey: "authorHasTraveledTo" },
-    THA: { fillKey: "authorHasTraveledTo" },
-    KHM: { fillKey: "authorHasTraveledTo" },
-  }
+  map.bubbles([
+    {
+      name: 'Singapore',
+      radius: 10,
+      centered: 'SGP',
+      fillKey: 'Singapore',
+      im: 'sin',
+      fillOpacity: 0.8,
+      text: "Lived here for a few months.",
+    },
+    {
+      name: 'Kuala Lumpur',
+      radius: setRadius,
+      latitude: 3, longitude: 102,
+      fillKey: 'travel',
+      im: 'kul',
+      fillOpacity: opacity,
+    },
+    {
+      name: 'Bali',
+      radius: setRadius,
+      latitude: -8.4, longitude: 115.2,
+      fillKey: 'travel',
+      im: 'bal',
+      fillOpacity: opacity,
+      text: "First real trip outside Singapore, went with friends and had a really good time.",
+    },
+    {
+      name: 'Hanoi',
+      radius: setRadius,
+      latitude: 21, longitude: 106,
+      fillKey: 'travel',
+      im: 'han',
+      fillOpacity: opacity,
+      text: "I'm still in love with Hanoi. The food is amazing.",
+    },
+    {
+      name: 'Koh Lanta',
+      radius: setRadius,
+      latitude: 7.5, longitude: 99,
+      fillKey: 'travel',
+      im: 'koh',
+      fillOpacity: opacity,
+      text: "Was travelling by myself and met amaxing people here.",
+    },
+    {
+      name: 'Udon Thani',
+      radius: setRadius,
+      latitude: 17.5, longitude: 102.4,
+      fillKey: 'travel',
+      im: 'udo',
+      fillOpacity: opacity,
+      text: "Went to the Red Lotus Lake in December, it was pink :)",
+    },
+    {
+      name: 'Old Bagan',
+      radius: setRadius,
+      latitude: 21.5, longitude: 95,
+      fillKey: 'travel',
+      im: 'old',
+      fillOpacity: opacity,
+      text: "Old Bagan is filled with ancient temples. Seeing them as the sun rises is unbelievably beautiful",
+    },
+    {
+      name: 'Angkor Wat',
+      radius: setRadius,
+      latitude: 13, longitude: 104,
+      fillKey: 'travel',
+      im: 'ang',
+      fillOpacity: opacity,
+      text: "This temple complex is crowded during the sunrise as everyone wants to see the beautiful sunrise.",
+    },
+    {
+      name: 'Yangon',
+      radius: setRadius,
+      latitude: 17, longitude: 96,
+      fillKey: 'travel',
+      im: 'yan',
+      fillOpacity: opacity,
+      text: "The most colorful city I went to, not many restaurants but I loved walkinng around in downtown Yangon.",
+    },
+    {
+      name: 'Ho Chi Minh City',
+      radius: setRadius,
+      latitude: 11, longitude: 107,
+      fillKey: 'travel',
+      im: 'hoc',
+      fillOpacity: opacity,
+      text: "The city was filled with motorcycles and the trafic was insane.",
+    },
+    {
+      name: 'Hoi An',
+      radius: setRadius,
+      latitude: 16, longitude: 108,
+      fillKey: 'travel',
+      im: 'hoi',
+      fillOpacity: opacity,
+      text: "The old city is filled with lanterns, old yellow houses, tourists and Tailors. During the evening the streets near the water flooded.",
+    },
+    {
+      name: 'Bangkok',
+      radius: setRadius,
+      latitude: 14, longitude: 100,
+      fillKey: 'travel',
+      im: 'ban',
+      fillOpacity: opacity,
+      text: "What happens in Bangkok stays in Bangkok.",
+    },
+    {
+      name: 'Lop Buri',
+      radius: setRadius,
+      latitude: 15, longitude: 101,
+      fillKey: 'travel',
+      im: 'lop',
+      fillOpacity: opacity,
+      text: "A small town with monkeys in central areas and sunflowers in the fields outside the city.",
+    },
+    {
+      name: 'Phuket',
+      radius: setRadius,
+      latitude: 8, longitude: 98,
+      fillKey: 'travel',
+      im: 'phu',
+      fillOpacity: opacity,
+      text: "After travelling in rural areas in Thailand it was amazing to see the beach again.",
+    },
+    {
+      name: 'Inle Lake',
+      radius: setRadius,
+      latitude: 21, longitude: 97,
+      fillKey: 'travel',
+      im: 'inl',
+      fillOpacity: opacity,
+      text: "We went here on a day trip. It was really beautiful.",
+    },
+    {
+      name: 'Gili Trawangan',
+      radius: setRadius,
+      latitude: -8, longitude: 116,
+      fillKey: 'travel',
+      im: 'gil',
+      fillOpacity: opacity,
+      text: "Gili Trawangan is a small island near Bali. There are no cars on the island. We went to a club in flip-flops and elephant-pants.",
+    },
+    {
+      name: 'Penang',
+      radius: setRadius,
+      latitude: 5, longitude: 100.5,
+      fillKey: 'travel',
+      im: 'pen',
+      fillOpacity: opacity,
+      text: "First place I traveled to by myself. It was really cool and a truly eye-opening experience.",
+    },
+    {
+      name: 'Cameron Highlands',
+      radius: setRadius,
+      latitude: 4, longitude: 101.4,
+      fillKey: 'travel',
+      im: 'cam',
+      fillOpacity: opacity,
+      text: "A beautiful place in Malaysia where they grow tea. The tea is really good, I still have lots left :)",
+    },
+    {
+      name: 'Mekong Delta',
+      radius: setRadius,
+      latitude: 10, longitude: 106,
+      fillKey: 'travel',
+      im: 'mek',
+      fillOpacity: opacity,
+      text: "Ho Chi Minh City was very exhausting for me so I went to see some nature for a few days, not so much nature but it was beautiful nevertheless.",
+    },
+    {
+      name: 'Malacca',
+      radius: setRadius,
+      latitude: 2, longitude: 102.7,
+      fillKey: 'travel',
+      im: 'mal',
+      fillOpacity: opacity,
+      text: "My last stop before going back to Singapore to pick up my luggage to go home. Spent one night here.",
+    },
+    {
+      name: 'Krabi',
+      radius: setRadius,
+      latitude: 8.5, longitude: 98.9,
+      fillKey: 'travel',
+      im: 'kra',
+      fillOpacity: opacity,
+      text: "I went here one night before going to Vietnam, I met some people I also met in Koh Lanta (was a positive surprise). We went to see the Tiger temple.",
+    },
+    {
+      name: 'Ninh Binh',
+      radius: setRadius,
+      latitude: 20, longitude: 105.4,
+      fillKey: 'travel',
+      im: 'nin',
+      fillOpacity: opacity,
+      text: "I went to see the carsed mountains, not dissapointed. Was on a one day tour, met interesting people and saw some amazing views.",
+    },
+    {
+      name: 'Phnom Penh',
+      radius: setRadius,
+      latitude: 11.5, longitude: 105,
+      fillKey: 'travel',
+      im: 'phn',
+      fillOpacity: opacity,
+      text: "Cambodias Capital, when we walked out from the hostel they told us to be safe and look after our bags. We saw the Toul Sleng (Genocide Museum) and the Killing fields from the Khmer Rouge Regime.",
+    }
+  ], {
+    popupTemplate: function(geo, data) {
+      if (data.text != null) {
+        document.getElementById("info").innerHTML = data.text;
+      }
+      else {
+        document.getElementById("info").innerHTML = "";
+      }
+      document.getElementById("image").src = "images/"+data.im+".jpg";
+      document.getElementById("image").style.display='block';
+      document.getElementById("text").innerHTML = data.name;
+    
+      return "<div class='hoverinfo'>" + data.name + "</div>"
+    }
 });
 
-      map.bubbles([
-  {
-    name: 'Singapore',
-    radius: 10,
-    centered: 'SGP',
-    fillKey: 'Singapore',
-    im: 'sin'
-  },
-  {
-    name: 'Kuala Lumpur',
-    radius: setRadius,
-    latitude: 3, longitude: 102,
-    fillKey: 'travel',
-    im: 'kul'
-  },
-  {
-    name: 'Bali',
-    radius: setRadius,
-    latitude: -8.4, longitude: 115.2,
-    fillKey: 'travel',
-    im: 'bal'
-  },
-  {
-    name: 'Hanoi',
-    radius: setRadius,
-    latitude: 21, longitude: 106,
-    fillKey: 'travel',
-    im: 'han'
-  },
-  {
-    name: 'Koh Lanta',
-    radius: setRadius,
-    latitude: 8, longitude: 99,
-    fillKey: 'travel',
-    im: 'koh'
-  },
-  {
-    name: 'Udon Thani',
-    radius: setRadius,
-    latitude: 17.5, longitude: 102.4,
-    fillKey: 'travel',
-    im: 'udo'
-  },
-  {
-    name: 'Old Bagan',
-    radius: setRadius,
-    latitude: 21, longitude: 95,
-    fillKey: 'travel',
-    im: 'old'
-  },
-  {
-    name: 'Angkor Wat',
-    radius: setRadius,
-    latitude: 13, longitude: 104,
-    fillKey: 'travel',
-    im: 'ang'
-  },
-], {
-  popupTemplate: function(geo, data) {
-    return '<div class="hoverinfo">' + data.name +'' + '<div class="image_wrapper" id="this_one"><img src="images/'+ data.im + '.jpg" /></div>'
-  }
+window.addEventListener('resize', function() {
+        map.resize();
+    });
+
+document.addEventListener("DOMContentLoaded", function(event) {
+   document.querySelectorAll('img').forEach(function(img){
+    img.onerror = function(){this.style.display='none';};
+   })
 });
 
-/*
-var colors = d3.scale.category10();
-
-      map.arc([{
-        destination: {
-          latitude: 1,
-          longitude: 104
-        },
-        origin: {
-          latitude:  60,
-          longitude: 24
-        }
-      }], {
-        greatArc: false,
-        animationSpeed: 1000
-      });
-      updateChoropleth();
-*/
+var countrydata = {"data": {
+  "China": "Haven't been here, yet...",
+  "Cambodia": "Went to Phnom Penh and Siem Reap (Angkor Wat).",
+  "Malaysia": "One of my favourite destinations.",
+  "Indonesia": "Wish I had traveled more here.",
+  "Viet Nam": "Spent 2 weeks here. Beautiful country.",
+  "Myanmar": "My favourite destination, but a very troubeled country.",
+  "Brunei Darussalam": "Haven't been here, yet...",
+  "Thailand": "Traveled here for 2 weeks",
+  "India": "Haven't been here, yet...",
+  "Lao People's Democratic Republic": "Haven't been here, yet...",
+  "Taiwan": "Haven't been here, yet...",
+  "Philippines": "Haven't been here, yet...",
+  "Bangladesh": "Haven't been here, yet...",
+  "Timor-Leste": "Haven't been here, yet...",
+  "Japan": "Haven't been here, yet...",
+  "Christmas Island": "Haven't been here, yet... This island is really small haha!",
+}};
       </script>
     </body>
 </html> 
