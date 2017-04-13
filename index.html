@@ -68,6 +68,9 @@
               height: 500px;
             }
           }
+          .cool {
+            text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+          }
         </style>
     </head>
     <body>
@@ -81,7 +84,7 @@
 
           <div class="col-sm-6">
             <div id="notmap">
-              <h2 id="text"></h2>
+              <h2 id="text"><br>Move the mouse over the map to explore my travel destinations. If you are on a phone or tabled you have to click. <br><br>The countries in <span class="cool" style="color: #aac856">green</span> are countries I visited, the <span style="color: #4c5e00" class="cool">circles</span> are the locations I went too.</h2>
               <img id="image"/>
               <h4 id="info"></h4>
             </div>
@@ -166,7 +169,7 @@
       fillKey: 'travel',
       im: 'bal',
       fillOpacity: opacity,
-      text: "First real trip outside Singapore, went with friends and had a really good time.",
+      text: 'First "real" trip outside Singapore, went with friends and had a really good time.',
     },
     {
       name: 'Hanoi',
@@ -184,7 +187,7 @@
       fillKey: 'travel',
       im: 'koh',
       fillOpacity: opacity,
-      text: "Was travelling by myself and met amaxing people here.",
+      text: "Was travelling by myself and met amazing people here.",
     },
     {
       name: 'Udon Thani',
@@ -310,7 +313,7 @@
       fillKey: 'travel',
       im: 'mek',
       fillOpacity: opacity,
-      text: "Ho Chi Minh City was very exhausting for me so I went to see some nature for a few days, not so much nature but it was beautiful nevertheless.",
+      text: "Ho Chi Minh City was very exhausting for me so I went to see some nature, it wasn't as green as I expected but it was beautiful nevertheless.",
     },
     {
       name: 'Malacca',
@@ -347,6 +350,15 @@
       im: 'phn',
       fillOpacity: opacity,
       text: "Cambodias Capital, when we walked out from the hostel they told us to be safe and look after our bags. We saw the Toul Sleng (Genocide Museum) and the Killing fields from the Khmer Rouge Regime.",
+    },
+    {
+      name: 'Johor Bahru',
+      radius: setRadius,
+      latitude: 2.5, longitude: 103.5,
+      fillKey: 'travel',
+      im: 'joh',
+      fillOpacity: opacity,
+      text: "First trip outside Singapore, the food was really good, but otherwise not impressed. Old beautiful houses were torn down so more malls could be built.",
     }
   ], {
     popupTemplate: function(geo, data) {
